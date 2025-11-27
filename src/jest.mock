@@ -1,0 +1,27 @@
+// src/App.test.js
+// Mock react-router-dom so Jest does not need the real package installed
+jest.mock('react-router-dom', () => {
+  const React = require('react');
+  return {
+    // MemoryRouter will just render children in tests
+    MemoryRouter: ({ children }) => children,
+    // Link / NavLink will render a basic <a> so components using them don't fail
+    Link: ({ children, ...props }) => React.createElement('a', props, children),
+    NavLink: ({ children, ...props }) => React.createElement('a', props, children),
+    // If you rely on useNavigate/useLocation in other tests, you can include simple mocks:
+    useNavigate: () => () => {},
+    useLocation: () => ({ pathname: '/' }),
+  };
+});
+
+// Now import React testing tools and your App
+import React from 'react';
+import { render, screen } from '@testing-library/react';
+import App from './App';
+
+test('renders App without crashing', () => {
+  render(<App />);
+  // Example assertion — adjust to text that actually exists in your app
+  const homeText = screen.getByText(/Home/i);
+  expect(homeText).toBeInTheDocument();
+});
